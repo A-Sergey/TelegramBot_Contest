@@ -42,6 +42,7 @@ class UsersInContests(Base):
 
     payment_id = Column(String, primary_key=True)
     user_id = Column(Integer)
+    username = Column(String)
     contestname = Column(String)
 
     def __str__(self): return f"{self.user_id} - {self.contestname}"

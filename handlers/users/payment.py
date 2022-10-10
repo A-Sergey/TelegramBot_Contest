@@ -51,6 +51,7 @@ async def successful_payment(message: types.Message):
     data = {
         "payment_id": payment["telegram_payment_charge_id"],
         "user_id": message.from_user.id,
+        "username": message.from_user.username,
         "contestname": payment["invoice_payload"]
     }
     user_pay(data)

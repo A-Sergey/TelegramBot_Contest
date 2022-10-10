@@ -31,7 +31,7 @@ def register_user(message: types.Message) -> bool:
         return True
     except IntegrityError:
         session.rollback()
-        logging.error(f"{user} not add in DB")
+        logging.warning(f"{user} not add in DB")
         return False
 
 def select_user(user_id: int) -> User:
@@ -60,15 +60,15 @@ def add_contest(data: dict) -> bool:
         return True
     except IntegrityError:
         session.rollback()
-        logging.error(f"{contest} not add in DB")
+        logging.warning(f"{contest} not add in DB")
         return False
 
 def get_contests(contest: str = None, column: str = None) -> list:
     """
     Return list contests
     param:
-    contest - return simple contest
-    column - return column in table 
+    contest - simple contest
+    column - column in table 
     """
     where = f" WHERE name = '{contest}'" if contest else ""
     select = f"{column}" if column else "*"
@@ -84,6 +84,7 @@ def user_pay(data: dict) -> bool:
     contest = UsersInContests(
         payment_id = data["payment_id"],
         user_id = data["user_id"],
+        username = data["username"],
         contestname = data["contestname"],
     )
 
@@ -95,11 +96,23 @@ def user_pay(data: dict) -> bool:
         return True
     except IntegrityError:
         session.rollback()
-        logging.error(f"{contest} not add in DB")
+        logging.warning(f"{contest} not add in DB")
         return False
+
+def get_user_in_contest(contest: str) -> list:
+    """
+    Return list of users who paid for the contest
+    param:
+    contest - contestname
+    """
+    req = f"SELECT username FROM users_in_contests WHERE contestname = '{contest}'"
+    users = session.execute(req).fetchall()
+    users = list(map(lambda user: user[0], users))
+    return users
 
 def have_payment(user_id: int, contest: str) -> list:
     """
+    Returns a list definition the user has paid for the contest
     """
     contests = session.execute(
         f"SELECT * FROM users_in_contests WHERE user_id={user_id} and contestname='{contest}'"

@@ -13,8 +13,16 @@ class FSMAdmin(StatesGroup):
     description = State()
     price = State()
 
-
-@dp.message_handler(commands=["Добавить_конкурс"], state=None)
+@dp.message_handler(state="*", commands="Отмена")
+@dp.message_handler(Text(equals="Отмена", ignore_case=True), state="*")
+async def cancel_handler(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.finish()
+    await message.reply("Ввод отменен")
+    
+@dp.message_handler(content_types=types.ContentType.TEXT, text="Добавить конкурс")
 async def start_command(message: types.Message, state: FSMContext):
     if str(message.from_user.id) in admins_id:
         await FSMAdmin.name.set()
@@ -58,12 +66,3 @@ async def add_price(message: types.Message, state: FSMContext):
                     "Конкурс не добавлен.\nНе коррекртные данные"
                 )
         await state.finish()
-
-@dp.message_handler(state="*", commands="Отмена")
-@dp.message_handler(Text(equals="Отмена", ignore_case=True), state="*")
-async def cancel_handler(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    await state.finish()
-    await message.reply("Ввод отменен")
