@@ -18,14 +18,18 @@ loop = asyncio.get_event_loop()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage, loop=loop)
 
+
 async def on_startup(dp):
     from utils.notify_admins import startup_notify
+
     await startup_notify(dp)
 
     from utils.bot_commands import set_default_commands
+
     await set_default_commands(dp)
 
     logging.info("Бот запущен.")
+
 
 if __name__ == "__main__":
     from aiogram import executor

@@ -1,13 +1,13 @@
 from sqlalchemy.exc import IntegrityError
 from aiogram import types
 from dotenv import load_dotenv
-import os
+import os, logging
 
 from utils.db_api.schemas.table_db import session, User, Contest, UsersInContests
-from main import logging
 
 
 load_dotenv()
+
 
 def register_user(message: types.Message) -> bool:
     """
@@ -34,6 +34,7 @@ def register_user(message: types.Message) -> bool:
         logging.warning(f"{user} not add in DB")
         return False
 
+
 def select_user(user_id: int) -> User:
     """
     Select simple user from DB.
@@ -41,15 +42,16 @@ def select_user(user_id: int) -> User:
     user = session.query(User).filter(User.id == user_id).first()
     return user
 
+
 def add_contest(data: dict) -> bool:
     """
     Add dict data in DB.
     """
     contest = Contest(
-        name = data["name"],
-        photo = data["photo"],
-        description = data["description"],
-        price = data["price"],
+        name=data["name"],
+        photo=data["photo"],
+        description=data["description"],
+        price=data["price"],
     )
 
     session.add(contest)
@@ -62,30 +64,29 @@ def add_contest(data: dict) -> bool:
         session.rollback()
         logging.warning(f"{contest} not add in DB")
         return False
+
 
 def get_contests(contest: str = None, column: str = None) -> list:
     """
     Return list contests
     param:
     contest - simple contest
-    column - column in table 
+    column - column in table
     """
     where = f" WHERE name = '{contest}'" if contest else ""
     select = f"{column}" if column else "*"
-    contests = session.execute(
-        f"SELECT {select} FROM contests{where}"
-    ).fetchall()
+    contests = session.execute(f"SELECT {select} FROM contests{where}").fetchall()
     return contests
+
 
 def user_pay(data: dict) -> bool:
     """
     Add user's payment in DB.
     """
     contest = UsersInContests(
-        payment_id = data["payment_id"],
-        user_id = data["user_id"],
-        username = data["username"],
-        contestname = data["contestname"],
+        payment_id=data["payment_id"],
+        user_id=data["user_id"],
+        contestname=data["contestname"],
     )
 
     session.add(contest)
@@ -98,6 +99,7 @@ def user_pay(data: dict) -> bool:
         session.rollback()
         logging.warning(f"{contest} not add in DB")
         return False
+
 
 def get_user_in_contest(contest: str) -> list:
     """
@@ -105,10 +107,11 @@ def get_user_in_contest(contest: str) -> list:
     param:
     contest - contestname
     """
-    req = f"SELECT username FROM users_in_contests WHERE contestname = '{contest}'"
+    req = f"SELECT user_id FROM users_in_contests WHERE contestname = '{contest}'"
     users = session.execute(req).fetchall()
     users = list(map(lambda user: user[0], users))
     return users
+
 
 def have_payment(user_id: int, contest: str) -> list:
     """

@@ -8,5 +8,6 @@ async def set_default_commands(dp):
             types.BotCommand("profile", "Посмотреть профиль"),
             types.BotCommand("contests", "Конкурсы"),
             types.BotCommand("finished_contests", "Завершенные конкурсы"),
+            types.BotCommand("help", "Справка"),
         ]
     )
