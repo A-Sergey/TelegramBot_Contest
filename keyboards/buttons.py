@@ -9,7 +9,10 @@ from main import admins_id
 from utils.db_api.schemas.table_db import session, Contest
 
 kb = ReplyKeyboardMarkup(resize_keyboard=True)
-kb.add(KeyboardButton("Добавить конкурс")).add(KeyboardButton("/Отмена"))
+kb.add(KeyboardButton("Добавить конкурс")).add(KeyboardButton("Отмена"))
+
+kb_auth = ReplyKeyboardMarkup(resize_keyboard=True)
+kb_auth.add(KeyboardButton("Авторизация по телефону", request_contact=True))
 
 
 def genmarkup(data: list) -> InlineKeyboardMarkup:
@@ -24,12 +27,20 @@ def to_pay(user_id: int, contest: str, skip: bool = False):
     markup = InlineKeyboardMarkup()
     markup.row_width = 1
     contest_query = session.query(Contest).filter(Contest.name == contest).first()
-    if not skip:
-        markup.add(InlineKeyboardButton("Внести плату", callback_data=f"pay_{contest}"))
-    if not (contest_query.winner) and str(user_id) in admins_id:
-        markup.add(
-            InlineKeyboardButton(
-                "Выбрать победителя и закончить конкурс", callback_data=f"win_{contest}"
+    if not (contest_query.winner):
+        if str(user_id) in admins_id:
+            markup.add(
+                InlineKeyboardButton(
+                    "Выбрать победителя и закончить конкурс",
+                    callback_data=f"win_{contest}",
+                )
             )
-        )
+        else:
+            if not skip:
+                markup.add(
+                    InlineKeyboardButton(
+                        "Внести плату",
+                        callback_data=f"pay_{contest}"
+                    )
+                )
     return markup

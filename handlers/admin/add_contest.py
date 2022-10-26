@@ -14,7 +14,7 @@ class FSMAdmin(StatesGroup):
     price = State()
 
 
-@dp.message_handler(state="*", commands="Отмена")
+@dp.message_handler(state="*", text="Отмена")
 @dp.message_handler(Text(equals="Отмена", ignore_case=True), state="*")
 async def cancel_handler(message: types.Message, state: FSMContext):
     current_state = await state.get_state()

@@ -28,6 +28,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(BigInteger, primary_key=True)
+    phone = Column(String(12))
     username = Column(String)
     name = Column(String)
     admin = Column(Boolean, default=False)

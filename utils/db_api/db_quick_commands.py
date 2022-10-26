@@ -16,8 +16,9 @@ def register_user(message: types.Message) -> bool:
     username = message.from_user.username if message.from_user.username else None
     user = User(
         id=message.from_user.id,
+        phone=message.contact.phone_number,
         username=username,
-        name=message.from_user.full_name
+        name=message.from_user.full_name,
     )
 
     if str(user.id) in os.getenv("ADMIN_ID").split(","):

@@ -10,7 +10,10 @@ from keyboards.buttons import genmarkup, to_pay
 async def out_current(message: types.Message):
     contests = get_contests()
     contests = list(filter(lambda contest: contest[4] == None, contests))
-    await message.answer("Список:", reply_markup=genmarkup(contests))
+    if contests:
+        await message.answer("Активные конкурсы:", reply_markup=genmarkup(contests))
+    else:
+        await message.answer("Отсутствуют активные конкурсы")
 
 
 # Output of the list of completed contests
@@ -18,7 +21,10 @@ async def out_current(message: types.Message):
 async def out_completed(message: types.Message):
     contests = get_contests()
     contests = list(filter(lambda contest: contest[4] != None, contests))
-    await message.answer("Список:", reply_markup=genmarkup(contests))
+    if contests:
+        await message.answer("Завершенные конкурсы:", reply_markup=genmarkup(contests))
+    else:
+        await message.answer("Нет завершенных конкурсов")
 
 
 # Output contest
